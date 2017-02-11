@@ -10,10 +10,6 @@ https://github.com/dmtcp/dmtcp/blob/master/src/mtcp/mtcp_util.ic as stated in th
 Instructions to run:
 1. Run the Makefile -- this compiles all the source code and runs it.
 
-
-The code right now has a functionality issue. The setcontext() sys call throws segmentation fault.
- 
-
 Debugging info:
 1. Tried verifying whther memory is mapped at correct location. -- Works
 2. Tried whether the value of "rsp" register changes correctly. -- Works
@@ -34,15 +30,3 @@ Implementatoin details:
 7. Copy data from checkpoint image to the the newly mapped region.
 8. run setcontext.
 The "hello" process starts again.
-
-EDIT:
-
-The changes made to solution:
-1. In ckpt.c, there was a bug, when the restarted process has a different pid. This validation was
-   not performed. So the close() could not recognise file descriptor "checkpoint". So, I have added
-   a check, that if, the new pid differed from old one, it should return.
-2. Also, I had written the checkpoint data and context to different files for debugging.
-   Now I have combined everything.   
-
-
- 
