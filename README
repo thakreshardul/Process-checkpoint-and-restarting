@@ -1,0 +1,48 @@
+
+The submitted code implements checkpoint-restart functinality wherein the the process "hello" runs indefinitely and is stopped by send SIGUSR2 signal. 
+After running the "restart" process, the saved context of "hello" is resumed again.
+
+
+NOTE: The code in parser.h is derived from 
+https://github.com/dmtcp/dmtcp/blob/master/src/mtcp/mtcp_util.ic as stated in the problem statement for reference.
+
+
+Instructions to run:
+1. Run the Makefile -- this compiles all the source code and runs it.
+
+
+The code right now has a functionality issue. The setcontext() sys call throws segmentation fault.
+ 
+
+Debugging info:
+1. Tried verifying whther memory is mapped at correct location. -- Works
+2. Tried whether the value of "rsp" register changes correctly. -- Works
+3. Verify whether the data that resides in memory of "hello" is
+   correctly read and written to the newly mapped memory.	-- Works
+4. Verified whether the old stack of "restart" process correctly
+   unmapped or not.						-- Works
+
+Implementatoin details:
+1. On receiving a SIGUSR2 signal from the user read the current process mappings 
+   and write to a file.
+2. Save the data in the mapped region in the file.
+3. Save the context to the file.
+4. In restart utility, Change the stack pointer to a fixed but non interfereing 
+   value.
+5. unmap the previous stack pointer.
+6. Read the checkpoint image and map a region for every entry in the file.
+7. Copy data from checkpoint image to the the newly mapped region.
+8. run setcontext.
+The "hello" process starts again.
+
+EDIT:
+
+The changes made to solution:
+1. In ckpt.c, there was a bug, when the restarted process has a different pid. This validation was
+   not performed. So the close() could not recognise file descriptor "checkpoint". So, I have added
+   a check, that if, the new pid differed from old one, it should return.
+2. Also, I had written the checkpoint data and context to different files for debugging.
+   Now I have combined everything.   
+
+
+ 
